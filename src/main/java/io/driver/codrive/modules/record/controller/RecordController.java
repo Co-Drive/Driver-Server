@@ -13,7 +13,6 @@ import io.driver.codrive.modules.record.model.request.RecordModifyRequest;
 import io.driver.codrive.modules.record.model.request.RecordSaveRequest;
 import io.driver.codrive.modules.record.model.request.RecordTempRequest;
 import io.driver.codrive.modules.record.model.response.*;
-import io.driver.codrive.modules.record.service.RecordCreateService;
 import io.driver.codrive.modules.record.service.RecordService;
 import io.driver.codrive.modules.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,8 +32,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecordController {
 	private final RecordService recordService;
-	private final RecordCreateService<RecordSaveRequest> recordSaveService;
-	private final RecordCreateService<RecordTempRequest> recordTempService;
 
 	@Operation(
 		summary = "문제 풀이 등록",
@@ -54,7 +51,7 @@ public class RecordController {
 	@PostMapping
 	public ResponseEntity<BaseResponse<RecordCreateResponse>> createSavedRecord(@Parameter(hidden = true) @AuthenticatedUserId Long currentUserId,
 		@Valid @RequestBody RecordSaveRequest request) throws IOException {
-		RecordCreateResponse response = recordSaveService.createRecord(currentUserId, request);
+		RecordCreateResponse response = recordService.saveRecord(currentUserId, request);
 		return ResponseEntity.ok(BaseResponse.of(response));
 	}
 
@@ -91,8 +88,8 @@ public class RecordController {
 	)
 	@PostMapping("/temp")
 	public ResponseEntity<BaseResponse<RecordCreateResponse>> createTempRecord(@AuthenticatedUserId Long currentUserId,
-		@Valid @RequestBody RecordTempRequest request) throws IOException {
-		RecordCreateResponse response = recordTempService.createRecord(currentUserId, request);
+		@Valid @RequestBody RecordTempRequest request) {
+		RecordCreateResponse response = recordService.createTempRecord(currentUserId, request);
 		return ResponseEntity.ok(BaseResponse.of(response));
 	}
 

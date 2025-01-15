@@ -1,5 +1,6 @@
 package io.driver.codrive.modules.user.domain;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
@@ -88,7 +89,14 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Notification> notifications;
 
-	public void addRecord(Record record) {
+	public void saveRecord(Record record, int successRate) {
+		this.addRecord(record);
+		this.addSolvedCount();
+		this.changeLastUpdatedAtOfJoinedRooms(record.getCreatedAt());
+		this.changeSuccessRate(successRate);
+	}
+
+	private void addRecord(Record record) {
 		this.records.add(record);
 	}
 
@@ -150,6 +158,10 @@ public class User extends BaseEntity {
 
 	public void changeSuccessRate(Integer successRate) {
 		this.successRate = successRate;
+	}
+
+	private void changeLastUpdatedAtOfJoinedRooms(LocalDateTime dateTime) {
+		this.getJoinedRooms().forEach(room -> room.changeLastUpdatedAt(dateTime));
 	}
 
 	public void deleteJoinedRoom(RoomUserMapping mapping) {

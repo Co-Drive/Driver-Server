@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import io.driver.codrive.global.exception.InternalServerErrorApplicationException;
@@ -46,9 +45,13 @@ public class GithubCommitService {
 	private final WebClient webClient;
 	private final GithubTokenService githubTokenService;
 
-	@Transactional
-	public void commitToGithub(Record record, User user, String path) throws IOException {
-		String accessToken = githubTokenService.getGithubTokenByUserId(user.getUserId()).getAccessToken();
+	public void commitRecordToGithub(Record record) throws IOException {
+		String path = getPath(record);
+		commitToGithub(record, record.getUser(), path);
+	}
+
+	private void commitToGithub(Record record, User user, String path) throws IOException {
+		String accessToken = githubTokenService.getGithubAccessToken(user.getUserId());
 		String message = String.format(COMMIT_MESSAGE, record.getTitle(),
 			DateUtils.formatCreatedAtByMD(record.getCreatedAt()));
 		String content = TemplateUtils.encodeBase64(getContent(record));
@@ -69,11 +72,17 @@ public class GithubCommitService {
 		}
 	}
 
-	public String getPath(Record record, Long recordNum) {
+	public void deleteGithubContent(Record record, User user) {
+		String path = getPath(record);
+		String sha = getGithubContentSha(user, path);
+		deleteGithubContent(record, user, path, sha);
+	}
+
+	public String getPath(Record record) {
 		String platformDirectoryName = record.getPlatform().getName();
 		String levelDirectoryName = LEVEL_PREFIX + record.getLevel();
 		String title = record.getTitle();
-		return String.format(PATH, platformDirectoryName, levelDirectoryName, recordNum, title);
+		return String.format(PATH, platformDirectoryName, levelDirectoryName, record.getRecordNum(), title);
 	}
 
 	public String getContent(Record record) throws IOException {
@@ -130,7 +139,7 @@ public class GithubCommitService {
 	}
 
 	public GithubContentDto getGithubContent(User user, String path) {
-		String accessToken = githubTokenService.getGithubTokenByUserId(user.getUserId()).getAccessToken();
+		String accessToken = githubTokenService.getGithubAccessToken(user.getUserId());
 
 		try {
 			return webClient.get()
@@ -146,8 +155,8 @@ public class GithubCommitService {
 		}
 	}
 
-	public void deleteGithubContent(Record record, User user, String path, String sha) {
-		String accessToken = githubTokenService.getGithubTokenByUserId(user.getUserId()).getAccessToken();
+	private void deleteGithubContent(Record record, User user, String path, String sha) {
+		String accessToken = githubTokenService.getGithubAccessToken(user.getUserId());
 		String message = String.format(COMMIT_MESSAGE, record.getTitle(),
 			DateUtils.formatCreatedAtByMD(record.getCreatedAt()));
 
