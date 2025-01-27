@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.driver.codrive.global.exception.IllegalArgumentApplicationException;
 import io.driver.codrive.global.util.PageUtils;
 import io.driver.codrive.modules.codeblock.service.CodeblockService;
 import io.driver.codrive.global.exception.NotFoundApplicationException;
@@ -21,8 +19,6 @@ import io.driver.codrive.modules.record.domain.Record;
 import io.driver.codrive.modules.record.domain.RecordRepository;
 import io.driver.codrive.modules.record.domain.RecordStatus;
 import io.driver.codrive.modules.record.model.request.RecordModifyRequest;
-import io.driver.codrive.modules.record.model.request.RecordSaveRequest;
-import io.driver.codrive.modules.record.model.request.RecordTempRequest;
 import io.driver.codrive.modules.record.model.response.*;
 import io.driver.codrive.modules.record.service.github.GithubCommitService;
 import io.driver.codrive.modules.user.domain.User;
@@ -34,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class RecordService {
-	private static final int TEMP_RECORD_LIMIT = 3;
 	private final UserService userService;
 	private final CodeblockService codeblockService;
 	private final RecordCategoryMappingService recordCategoryMappingService;
@@ -42,52 +37,8 @@ public class RecordService {
 	private final CalculateService calculateService;
 	private final RecordRepository recordRepository;
 
-	@Transactional
-	public RecordCreateResponse saveRecord(Long userId, RecordSaveRequest request) throws IOException {
-		User user = userService.getUserById(userId);
-		Record record = createRecord(request.toRecord(user), request.getTempRecordId());
-		codeblockService.createCodeblocks(request.getCodeblocks(), record);
-		recordCategoryMappingService.createRecordCategoryMapping(request.getTags(), record);
-
-		int successRate = getSuccessRate(user);
-		user.saveRecord(record, successRate);
-		record.changeRecordNum(user.getSolvedCount());
-
-		githubCommitService.commitRecordToGithub(record);
-		return RecordCreateResponse.of(record);
-	}
-
-	@Transactional
-	public RecordCreateResponse createTempRecord(Long userId, RecordTempRequest request) {
-		User user = userService.getUserById(userId);
-
-		if (request.getTempRecordId() == null) {
-			checkTempRecordLimit(user);
-		}
-
-		Record record = createRecord(request.toRecord(user), request.getTempRecordId());
-		codeblockService.createCodeblocks(request.getCodeblocks(), record);
-		recordCategoryMappingService.createRecordCategoryMapping(request.getTags(), record);
-		return RecordCreateResponse.of(record);
-	}
-
-	private void checkTempRecordLimit(User user) {
-		List<Record> tempRecords = recordRepository.findAllByUserAndRecordStatus(user, RecordStatus.TEMP);
-		if (tempRecords.size() >= TEMP_RECORD_LIMIT) {
-			throw new IllegalArgumentApplicationException("임시 저장 최대 개수를 초과했습니다.");
-		}
-	}
-
-	private Record createRecord(Record record, Long tempRecordId) {
-		Record createdRecord = recordRepository.save(record);
-		deleteTempRecord(tempRecordId);
-		return createdRecord;
-	}
-
-	private void deleteTempRecord(Long tempRecordId) {
-		if (tempRecordId != null) {
-			deleteRecord(tempRecordId);
-		}
+	public Record saveRecord(Record record) {
+		return recordRepository.save(record);
 	}
 
 	public Record getRecordById(Long recordId) {
@@ -135,14 +86,18 @@ public class RecordService {
 
 	@Transactional
 	@PreAuthorize("@recordAccessHandler.isOwner(#recordId)")
-	public void deleteRecord(Long recordId) {
-		Record record = getRecordById(recordId);
-		User user = record.getUser();
-		recordRepository.delete(record);
+	public void deleteRecord(Long userId, Long recordId) {
+		User user = userService.getUserById(userId);
+		deleteRecordById(recordId);
 		user.changeSuccessRate(getSuccessRate(user));
 	}
 
-	private int getSuccessRate(User user) {
+	public void deleteRecordById(Long recordId) {
+		Record record = getRecordById(recordId);
+		recordRepository.delete(record);
+	}
+
+	public int getSuccessRate(User user) {
 		int solvedDayCountByWeek = recordRepository.getSolvedDaysByWeek(user.getUserId(), LocalDate.now());
 		return calculateService.calculateSuccessRate(solvedDayCountByWeek);
 	}
@@ -156,6 +111,10 @@ public class RecordService {
 
 	public int getRecordsCountByWeek(Long userId, LocalDate pivotDate) {
 		return recordRepository.getRecordsCountByWeek(userId, pivotDate);
+	}
+
+	public Long getRecordsCountByUserAndRecordStatus(User user, RecordStatus recordStatus) {
+		return recordRepository.getRecordsCountByUserAndRecordStatus(user, recordStatus);
 	}
 
 	public int getTodayRecordCount(User user) {

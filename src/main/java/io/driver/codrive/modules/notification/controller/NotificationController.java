@@ -14,6 +14,7 @@ import io.driver.codrive.modules.notification.model.response.NotificationListRes
 import io.driver.codrive.modules.notification.service.NotificationService;
 import io.driver.codrive.modules.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,7 +32,7 @@ public class NotificationController {
 		summary = "알림 스트림 등록"
 	)
 	@GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter registerUser(@AuthenticatedUser User currentUser) {
+	public SseEmitter registerUser(@Parameter(hidden = true) @AuthenticatedUser User currentUser) {
 		return notificationService.registerUser(currentUser);
 	}
 
@@ -39,7 +40,7 @@ public class NotificationController {
 		summary = "알림 스트림 해제"
 	)
 	@DeleteMapping
-	public void unregisterUser(@AuthenticatedUserId Long currentUserId) {
+	public void unregisterUser(@Parameter(hidden = true) @AuthenticatedUserId Long currentUserId) {
 		notificationService.unregisterUser(currentUserId);
 	}
 
@@ -51,7 +52,7 @@ public class NotificationController {
 		}
 	)
 	@GetMapping("/list")
-	public ResponseEntity<BaseResponse<NotificationListResponse>> getNotifications(@AuthenticatedUser User currentUser) {
+	public ResponseEntity<BaseResponse<NotificationListResponse>> getNotifications(@Parameter(hidden = true) @AuthenticatedUser User currentUser) {
 		NotificationListResponse response = notificationService.getNotifications(currentUser);
 		return ResponseEntity.ok(BaseResponse.of(response));
 	}

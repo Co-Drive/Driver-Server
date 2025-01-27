@@ -13,7 +13,10 @@ import io.driver.codrive.modules.record.model.request.RecordModifyRequest;
 import io.driver.codrive.modules.record.model.request.RecordSaveRequest;
 import io.driver.codrive.modules.record.model.request.RecordTempRequest;
 import io.driver.codrive.modules.record.model.response.*;
+import io.driver.codrive.modules.record.service.AbstractRecordCreateService;
+import io.driver.codrive.modules.record.service.RecordSaveService;
 import io.driver.codrive.modules.record.service.RecordService;
+import io.driver.codrive.modules.record.service.RecordTempService;
 import io.driver.codrive.modules.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecordController {
 	private final RecordService recordService;
+	private final AbstractRecordCreateService recordSaveService;
+	private final AbstractRecordCreateService recordTempService;
 
 	@Operation(
 		summary = "문제 풀이 등록",
@@ -51,7 +56,7 @@ public class RecordController {
 	@PostMapping
 	public ResponseEntity<BaseResponse<RecordCreateResponse>> createSavedRecord(@Parameter(hidden = true) @AuthenticatedUserId Long currentUserId,
 		@Valid @RequestBody RecordSaveRequest request) throws IOException {
-		RecordCreateResponse response = recordService.saveRecord(currentUserId, request);
+		RecordCreateResponse response = recordSaveService.createRecord(currentUserId, request);
 		return ResponseEntity.ok(BaseResponse.of(response));
 	}
 
@@ -87,9 +92,9 @@ public class RecordController {
 		}
 	)
 	@PostMapping("/temp")
-	public ResponseEntity<BaseResponse<RecordCreateResponse>> createTempRecord(@AuthenticatedUserId Long currentUserId,
-		@Valid @RequestBody RecordTempRequest request) {
-		RecordCreateResponse response = recordService.createTempRecord(currentUserId, request);
+	public ResponseEntity<BaseResponse<RecordCreateResponse>> createTempRecord(@Parameter(hidden = true) @AuthenticatedUserId Long currentUserId,
+		@Valid @RequestBody RecordTempRequest request) throws IOException {
+		RecordCreateResponse response = recordTempService.createRecord(currentUserId, request);
 		return ResponseEntity.ok(BaseResponse.of(response));
 	}
 
@@ -106,7 +111,7 @@ public class RecordController {
 	)
 	@GetMapping("/temp")
 	public ResponseEntity<BaseResponse<TempRecordListResponse>> getTempRecords(
-		@AuthenticatedUser User currentUser,
+		@Parameter(hidden = true) @AuthenticatedUser User currentUser,
 		@RequestParam(name = "page", defaultValue = "0") Integer page,
 		@RequestParam(name = "size", defaultValue = "1") Integer size) {
 		TempRecordListResponse response = recordService.getTempRecordsByPage(currentUser, page, size);
@@ -134,7 +139,7 @@ public class RecordController {
 	)
 	@PatchMapping("/{recordId}")
 	public ResponseEntity<BaseResponse<RecordModifyResponse>> modifyRecord(
-		@AuthenticatedUserId Long currentUserId,
+		@Parameter(hidden = true) @AuthenticatedUserId Long currentUserId,
 		@PathVariable(name = "recordId") Long recordId,
 		@Valid @RequestBody RecordModifyRequest request) throws IOException {
 		RecordModifyResponse response = recordService.modifyRecord(currentUserId, recordId, request);
@@ -153,8 +158,9 @@ public class RecordController {
 		}
 	)
 	@DeleteMapping("/{recordId}")
-	public ResponseEntity<BaseResponse<Void>> deleteRecord(@PathVariable(name = "recordId") Long recordId) {
-		recordService.deleteRecord(recordId);
+	public ResponseEntity<BaseResponse<Void>> deleteRecord(@Parameter(hidden = true) @AuthenticatedUserId Long userId,
+		@PathVariable(name = "recordId") Long recordId) {
+		recordService.deleteRecord(userId, recordId);
 		return ResponseEntity.ok(BaseResponse.of(null));
 	}
 

@@ -137,7 +137,7 @@ public class RoomController {
 	)
 	@GetMapping("/{userId}/member/{sortType}")
 	public ResponseEntity<BaseResponse<JoinedRoomListResponse>> getJoinedRoomList(@PathVariable(name = "userId") Long userId,
-		@AuthenticatedUser User currentUser, @PathVariable(name = "sortType") SortType sortType,
+		@Parameter(hidden = true) @AuthenticatedUser User currentUser, @PathVariable(name = "sortType") SortType sortType,
 		@RequestParam(name = "page", required = false) Integer page,
 		@RequestParam(name = "status", required = false) String status) {
 		JoinedRoomListResponse response = roomService.getJoinedRoomList(userId, currentUser, sortType, page, status);

@@ -50,7 +50,7 @@ public class RecordBoardController {
 		@RequestParam(name = "pivotDate", required = false) String pivotDate,
 		@RequestParam(name = "page", defaultValue = "0") Integer page,
 		@RequestParam(name = "size", defaultValue = "7") Integer size,
-		@AuthenticatedUserId Long currentUserId) {
+		@Parameter(hidden = true) @AuthenticatedUserId Long currentUserId) {
 		RecordMonthListResponse response = countBoardService.getRecordsByMonth(userId, sortType, pivotDate,
 			page, size, currentUserId);
 		return ResponseEntity.ok(BaseResponse.of(response));
