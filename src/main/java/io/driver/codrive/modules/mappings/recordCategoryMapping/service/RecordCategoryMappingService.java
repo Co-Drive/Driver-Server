@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.driver.codrive.modules.mappings.recordCategoryMapping.domain.RecordCategoryMapping;
 import io.driver.codrive.modules.mappings.recordCategoryMapping.domain.RecordCategoryMappingRepository;
@@ -19,15 +18,22 @@ public class RecordCategoryMappingService {
 	private final CategoryService categoryService;
 	private final RecordCategoryMappingRepository recordCategoryMappingRepository;
 
-	@Transactional
 	public void createRecordCategoryMapping(List<String> tags, Record record) {
-		List<RecordCategoryMapping> mappings = getRecordCategoryMappingsByTags(tags, record);
-		recordCategoryMappingRepository.saveAll(mappings);
-		record.changeCategories(mappings);
+		if (tags != null && !tags.isEmpty()) {
+			List<RecordCategoryMapping> mappings = getRecordCategoryMappingsByTags(tags, record);
+			recordCategoryMappingRepository.saveAll(mappings);
+			record.changeCategories(mappings);
+		}
 	}
 
-	@Transactional
-	public void deleteRecordCategoryMapping(List<RecordCategoryMapping> mappings, Record record) {
+	public void updateTags(Record record, List<String> tags) {
+		if (!record.compareTags(tags)) {
+			deleteRecordCategoryMapping(record.getRecordCategoryMappings(), record);
+			createRecordCategoryMapping(tags, record);
+		}
+	}
+
+	private void deleteRecordCategoryMapping(List<RecordCategoryMapping> mappings, Record record) {
 		recordCategoryMappingRepository.deleteAll(mappings);
 		record.deleteCategories(mappings);
 	}

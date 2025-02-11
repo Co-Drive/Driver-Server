@@ -15,10 +15,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class RecordSaveRequest extends RecordCreateRequest {
+@AllArgsConstructor
+public class RecordSaveRequest extends AbstractRecordCreateRequest {
 	@Schema(description = "임시저장된 문제 풀이 ID (nullable)", example = "1")
 	private Long tempRecordId;
 
@@ -55,6 +57,7 @@ public class RecordSaveRequest extends RecordCreateRequest {
 	@Size(min = 1, max = 10, message = "코드 블록은 {min}개 이상 {max}개 이하로 입력해주세요.")
 	private List<CodeblockCreateRequest> codeblocks;
 
+	@Override
     public Record toRecord(User user) {
 		return Record.builder()
 			.user(user)

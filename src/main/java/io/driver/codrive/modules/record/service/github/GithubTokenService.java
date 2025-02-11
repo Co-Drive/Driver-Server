@@ -73,7 +73,7 @@ public class GithubTokenService {
 		githubTokenRepository.save(token);
 	}
 
-	public GithubToken getGithubTokenByUserId(Long userId) {
+	private GithubToken getGithubTokenByUserId(Long userId) {
 		return githubTokenRepository.findById(String.valueOf(userId)).orElseThrow(
 			() -> new NotFoundApplicationException("Github Token")
 		);

@@ -14,7 +14,9 @@ import io.driver.codrive.modules.user.domain.User;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long>, RecordRepositoryCustom {
-	List<Record> findAllByUserAndRecordStatus(User user, RecordStatus recordStatus);
+	@Query("SELECT count(*) FROM Record r WHERE r.user = :user AND r.recordStatus = :recordStatus")
+	Long getRecordsCountByUserAndRecordStatus(User user, RecordStatus recordStatus);
+
 	Page<Record> findAllByUserAndRecordStatusOrderByCreatedAtDesc(User user, RecordStatus recordStatus, Pageable pageable);
 	List<Record> findAllByUserAndRecordStatusOrderByCreatedAtDesc(User user, RecordStatus recordStatus);
 	List<Record> findAllByUserAndRecordStatusAndCreatedAtBetween(User user, RecordStatus recordStatus, LocalDateTime startOfDay, LocalDateTime endOfDay);

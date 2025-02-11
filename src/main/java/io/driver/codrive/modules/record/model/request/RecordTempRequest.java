@@ -14,10 +14,12 @@ import io.driver.codrive.modules.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class RecordTempRequest extends RecordCreateRequest {
+@AllArgsConstructor
+public class RecordTempRequest extends AbstractRecordCreateRequest {
 	@Schema(description = "임시저장된 문제 풀이 ID (nullable)", example = "1")
 	private Long tempRecordId;
 
