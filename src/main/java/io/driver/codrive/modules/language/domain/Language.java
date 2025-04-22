@@ -2,7 +2,7 @@ package io.driver.codrive.modules.language.domain;
 
 import java.util.List;
 
-import io.driver.codrive.modules.mappings.roomLanguageMapping.domain.RoomLanguageMapping;
+import io.driver.codrive.modules.mappings.roomlanguagemapping.domain.RoomLanguageMapping;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

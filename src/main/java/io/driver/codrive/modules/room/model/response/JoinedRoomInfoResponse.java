@@ -2,7 +2,7 @@ package io.driver.codrive.modules.room.model.response;
 
 import java.util.List;
 
-import io.driver.codrive.modules.mappings.roomUserMapping.model.LanguageMemberCountDto;
+import io.driver.codrive.modules.mappings.roomusermapping.model.LanguageMemberCountDto;
 import io.driver.codrive.modules.room.domain.Room;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

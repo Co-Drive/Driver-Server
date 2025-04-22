@@ -3,6 +3,7 @@ package io.driver.codrive.modules.record.controller;
 import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import io.driver.codrive.global.auth.AuthenticatedUser;
@@ -14,9 +15,7 @@ import io.driver.codrive.modules.record.model.request.RecordSaveRequest;
 import io.driver.codrive.modules.record.model.request.RecordTempRequest;
 import io.driver.codrive.modules.record.model.response.*;
 import io.driver.codrive.modules.record.service.AbstractRecordCreateService;
-import io.driver.codrive.modules.record.service.RecordSaveService;
 import io.driver.codrive.modules.record.service.RecordService;
-import io.driver.codrive.modules.record.service.RecordTempService;
 import io.driver.codrive.modules.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,7 +27,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Tag(name = "Record API", description = "문제 풀이 관련 API")
 @RestController
 @RequestMapping(APIConstants.API_PREFIX + "/records")
@@ -71,7 +72,8 @@ public class RecordController {
 		}
 	)
 	@GetMapping("/{recordId}")
-	public ResponseEntity<BaseResponse<RecordDetailResponse>> getRecordDetail(@PathVariable(name = "recordId") Long recordId) {
+	public ResponseEntity<BaseResponse<RecordDetailResponse>> getRecordDetail(@AuthenticationPrincipal String userId, @PathVariable(name = "recordId") Long recordId) {
+		log.info("userId : " + userId);
 		RecordDetailResponse response = recordService.getRecordDetail(recordId);
 		return ResponseEntity.ok(BaseResponse.of(response));
 	}

@@ -13,9 +13,9 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 
 	Optional<User> findByNickname(String nickname);
 
-	Boolean existsByNickname(String nickname);
+	boolean existsByNickname(String nickname);
 
-	Boolean existsByUsername(String username);
+	boolean existsByUsername(String username);
 
 	@Modifying
     @Query("UPDATE User u SET u.successRate = 0")

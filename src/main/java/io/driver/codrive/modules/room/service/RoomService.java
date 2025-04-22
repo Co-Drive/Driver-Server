@@ -20,8 +20,8 @@ import io.driver.codrive.global.exception.NotFoundApplicationException;
 import io.driver.codrive.global.util.PageUtils;
 import io.driver.codrive.modules.language.domain.Language;
 import io.driver.codrive.modules.language.service.LanguageService;
-import io.driver.codrive.modules.mappings.roomLanguageMapping.service.RoomLanguageMappingService;
-import io.driver.codrive.modules.mappings.roomUserMapping.service.RoomUserMappingService;
+import io.driver.codrive.modules.mappings.roomlanguagemapping.service.RoomLanguageMappingService;
+import io.driver.codrive.modules.mappings.roomusermapping.service.RoomUserMappingService;
 import io.driver.codrive.modules.notification.service.NotificationService;
 import io.driver.codrive.modules.room.domain.Room;
 import io.driver.codrive.modules.room.domain.RoomRepository;
@@ -34,8 +34,8 @@ import io.driver.codrive.modules.room.model.request.RoomCreateRequest;
 import io.driver.codrive.modules.room.model.request.RoomFilterRequest;
 import io.driver.codrive.modules.room.model.request.RoomModifyRequest;
 import io.driver.codrive.modules.room.model.response.*;
-import io.driver.codrive.modules.roomRequest.domain.UserRequestStatus;
-import io.driver.codrive.modules.roomRequest.service.RoomRequestService;
+import io.driver.codrive.modules.roomrequest.domain.UserRequestStatus;
+import io.driver.codrive.modules.roomrequest.service.RoomRequestService;
 import io.driver.codrive.modules.user.domain.User;
 import io.driver.codrive.modules.room.model.response.CreatedRoomListResponse;
 import io.driver.codrive.modules.room.model.response.JoinedRoomListResponse;
@@ -168,9 +168,9 @@ public class RoomService {
 			Pageable pageable = PageRequest.of(page, ROOMS_SIZE);
 			Page<Room> rooms = roomUserMappingService.getJoinedRoomsByPage(user.getUserId(), roomStatus, sortType,
 				pageable);
-			return JoinedRoomListResponse.of(rooms.getTotalPages(), rooms.getContent(), currentUser);
+			return JoinedRoomListResponse.of(rooms.getTotalPages(), rooms.getContent());
 		}
-		return JoinedRoomListResponse.of(getJoinedRoomsBySort(user, sortType), currentUser);
+		return JoinedRoomListResponse.of(getJoinedRoomsBySort(user, sortType));
 	}
 
 	private List<Room> getJoinedRoomsBySort(User user, SortType sortType) {

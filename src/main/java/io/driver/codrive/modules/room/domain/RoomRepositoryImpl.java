@@ -13,8 +13,8 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 
-import static io.driver.codrive.modules.mappings.roomLanguageMapping.domain.QRoomLanguageMapping.roomLanguageMapping;
-import static io.driver.codrive.modules.mappings.roomUserMapping.domain.QRoomUserMapping.*;
+import static io.driver.codrive.modules.mappings.roomlanguagemapping.domain.QRoomLanguageMapping.roomLanguageMapping;
+import static io.driver.codrive.modules.mappings.roomusermapping.domain.QRoomUserMapping.*;
 import static io.driver.codrive.modules.room.domain.QRoom.room;
 import static io.driver.codrive.modules.language.domain.QLanguage.language;
 

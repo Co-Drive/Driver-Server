@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import io.driver.codrive.global.exception.IllegalArgumentApplicationException;
 import io.driver.codrive.modules.codeblock.service.CodeblockService;
-import io.driver.codrive.modules.mappings.recordCategoryMapping.service.RecordCategoryMappingService;
+import io.driver.codrive.modules.mappings.recordcategorymapping.service.RecordCategoryMappingService;
 import io.driver.codrive.modules.record.domain.Record;
 import io.driver.codrive.modules.record.domain.RecordStatus;
 import io.driver.codrive.modules.record.model.request.AbstractRecordCreateRequest;
@@ -38,5 +38,5 @@ public class RecordTempService extends AbstractRecordCreateService {
 	}
 
 	@Override
-	protected void postprocess(User user, Record record) {}
+	protected void postprocess(User user, Record record) {} //필요한 경우 재정의하여 사용
 }
