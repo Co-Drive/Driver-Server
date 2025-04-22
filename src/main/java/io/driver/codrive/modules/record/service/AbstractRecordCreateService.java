@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.driver.codrive.modules.codeblock.service.CodeblockService;
-import io.driver.codrive.modules.mappings.recordCategoryMapping.service.RecordCategoryMappingService;
+import io.driver.codrive.modules.mappings.recordcategorymapping.service.RecordCategoryMappingService;
 import io.driver.codrive.modules.record.domain.Record;
 import io.driver.codrive.modules.record.model.request.AbstractRecordCreateRequest;
 import io.driver.codrive.modules.record.model.response.RecordCreateResponse;

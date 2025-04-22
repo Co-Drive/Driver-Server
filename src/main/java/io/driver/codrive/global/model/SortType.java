@@ -1,7 +1,7 @@
 package io.driver.codrive.global.model;
 
 
-import static io.driver.codrive.modules.mappings.roomUserMapping.domain.QRoomUserMapping.*;
+import static io.driver.codrive.modules.mappings.roomusermapping.domain.QRoomUserMapping.*;
 import static io.driver.codrive.modules.room.domain.QRoom.*;
 
 import java.util.Comparator;
@@ -17,13 +17,17 @@ import io.driver.codrive.modules.room.domain.Room;
 public enum SortType {
 	NEW, DICT, OLD;
 
+	private static final String TIME_PROPERTIES = "createdAt";
+	private static final String DICTIONARY_PROPERTIES = "title";
+	private static final String NOT_SUPPORTED_EXCEPTION_MESSAGE = "지원하지 않는 정렬 방식입니다.";
+
 	public static Sort getRoomSort(SortType sortType) {
 		if (sortType == NEW) {
-			return Sort.by(Sort.Direction.DESC, "createdAt");
+			return Sort.by(Sort.Direction.DESC, TIME_PROPERTIES);
 		} else if (sortType == DICT) {
-			return Sort.by(Sort.Direction.ASC, "title");
+			return Sort.by(Sort.Direction.ASC, DICTIONARY_PROPERTIES);
 		} else {
-			throw new IllegalArgumentApplicationException("지원하지 않는 정렬 방식입니다.");
+			throw new IllegalArgumentApplicationException(NOT_SUPPORTED_EXCEPTION_MESSAGE);
 		}
 	}
 
@@ -33,17 +37,17 @@ public enum SortType {
 		} else if (sortType == SortType.DICT) {
 			return Comparator.comparing(Room::getTitle);
 		} else {
-			throw new IllegalArgumentApplicationException("지원하지 않는 정렬 방식입니다.");
+			throw new IllegalArgumentApplicationException(NOT_SUPPORTED_EXCEPTION_MESSAGE);
 		}
 	}
 
 	public static Sort getRoomRequestSort(SortType sortType) {
 		if (sortType == NEW) {
-			return Sort.by(Sort.Direction.DESC, "createdAt");
+			return Sort.by(Sort.Direction.DESC, TIME_PROPERTIES);
 		} else if (sortType == OLD) {
-			return Sort.by(Sort.Direction.ASC, "createdAt");
+			return Sort.by(Sort.Direction.ASC, TIME_PROPERTIES);
 		} else {
-			throw new IllegalArgumentApplicationException("지원하지 않는 정렬 방식입니다.");
+			throw new IllegalArgumentApplicationException(NOT_SUPPORTED_EXCEPTION_MESSAGE);
 		}
 	}
 
@@ -53,7 +57,7 @@ public enum SortType {
 		} else if (sortType == DICT) {
 			return new OrderSpecifier<>(Order.ASC, room.title);
 		} else {
-			throw new IllegalArgumentApplicationException("지원하지 않는 정렬 방식입니다.");
+			throw new IllegalArgumentApplicationException(NOT_SUPPORTED_EXCEPTION_MESSAGE);
 		}
     }
 
@@ -63,8 +67,7 @@ public enum SortType {
 		} else if (sortType == DICT) {
 			return new OrderSpecifier<>(Order.ASC, room.title);
 		} else {
-			throw new IllegalArgumentApplicationException("지원하지 않는 정렬 방식입니다.");
+			throw new IllegalArgumentApplicationException(NOT_SUPPORTED_EXCEPTION_MESSAGE);
 		}
     }
-
 }

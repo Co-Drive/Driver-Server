@@ -13,13 +13,15 @@ import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class SwaggerConfig {
+	public static final String AUTHORIZATION_HEADER = "Authorization";
+
 	@Bean
 	public OpenAPI openAPI() {
 		return new OpenAPI().addServersItem(new Server().url("/"))
 			.components(new Components()
-				.addSecuritySchemes("Authorization", new SecurityScheme().type(SecurityScheme.Type.APIKEY)
+				.addSecuritySchemes(AUTHORIZATION_HEADER, new SecurityScheme().type(SecurityScheme.Type.APIKEY)
 					.in(SecurityScheme.In.HEADER)
-					.name("Authorization"))).addSecurityItem(new SecurityRequirement().addList("Authorization"))
+					.name(AUTHORIZATION_HEADER))).addSecurityItem(new SecurityRequirement().addList(AUTHORIZATION_HEADER))
 			.info(getInfo());
 	}
 

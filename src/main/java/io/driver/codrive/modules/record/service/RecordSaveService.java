@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.stereotype.Service;
 
 import io.driver.codrive.modules.codeblock.service.CodeblockService;
-import io.driver.codrive.modules.mappings.recordCategoryMapping.service.RecordCategoryMappingService;
+import io.driver.codrive.modules.mappings.recordcategorymapping.service.RecordCategoryMappingService;
 import io.driver.codrive.modules.record.domain.Record;
 import io.driver.codrive.modules.record.model.request.AbstractRecordCreateRequest;
 import io.driver.codrive.modules.record.service.github.GithubCommitService;
@@ -26,7 +26,7 @@ public class RecordSaveService extends AbstractRecordCreateService {
 	}
 
 	@Override
-	protected void preprocess(User user, AbstractRecordCreateRequest request) {}
+	protected void preprocess(User user, AbstractRecordCreateRequest request) {} //empty method
 
 	@Override
 	protected void postprocess(User user, Record record) throws IOException {

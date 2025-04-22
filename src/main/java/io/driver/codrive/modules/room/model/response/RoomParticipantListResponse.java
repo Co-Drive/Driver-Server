@@ -2,7 +2,7 @@ package io.driver.codrive.modules.room.model.response;
 
 import java.util.List;
 
-import io.driver.codrive.modules.roomRequest.domain.RoomRequest;
+import io.driver.codrive.modules.roomrequest.domain.RoomRequest;
 import io.driver.codrive.modules.user.model.response.UserSummaryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

@@ -5,9 +5,9 @@ import java.util.List;
 
 import io.driver.codrive.global.entity.BaseEntity;
 import io.driver.codrive.global.exception.IllegalArgumentApplicationException;
-import io.driver.codrive.modules.mappings.roomLanguageMapping.domain.RoomLanguageMapping;
-import io.driver.codrive.modules.mappings.roomUserMapping.domain.RoomUserMapping;
-import io.driver.codrive.modules.roomRequest.domain.RoomRequest;
+import io.driver.codrive.modules.mappings.roomlanguagemapping.domain.RoomLanguageMapping;
+import io.driver.codrive.modules.mappings.roomusermapping.domain.RoomUserMapping;
+import io.driver.codrive.modules.roomrequest.domain.RoomRequest;
 import io.driver.codrive.modules.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
