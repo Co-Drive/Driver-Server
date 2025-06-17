@@ -1,11 +1,11 @@
 package io.driver.codrive.modules.record.domain;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -18,11 +18,11 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
+import com.querydsl.jpa.JPQLQuery;
 
 import io.driver.codrive.global.exception.IllegalArgumentApplicationException;
 import io.driver.codrive.global.model.SortType;
 import io.driver.codrive.global.util.DateUtils;
-import io.driver.codrive.global.util.PageUtils;
 import io.driver.codrive.modules.record.model.dto.RecordCountDto;
 
 @Repository
@@ -35,12 +35,16 @@ public class RecordRepositoryImpl extends QuerydslRepositorySupport implements R
 	public Page<Record> getMonthlyRecords(Long userId, LocalDate pivotDate, SortType sortType, Pageable pageable) {
 		StringTemplate formattedYearMonth = getFormattedDate("%Y-%m");
 		String pivotDateYearMonth = DateUtils.formatYearMonth(pivotDate);
-		List<Record> records = from(record)
+		JPQLQuery<Record> query = from(record)
 			.where(record.user.userId.eq(userId), formattedYearMonth.eq(pivotDateYearMonth),
 				record.recordStatus.eq(RecordStatus.SAVED))
-			.orderBy(createRecordOrderSpecifier(sortType))
+			.orderBy(createRecordOrderSpecifier(sortType));
+
+		long total = query.fetchCount();
+		List<Record> records = query.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
-		return PageUtils.getPage(records, pageable, records.size());
+		return new PageImpl<>(records, pageable, total);
 	}
 
 	@Override
@@ -111,5 +115,5 @@ public class RecordRepositoryImpl extends QuerydslRepositorySupport implements R
 		} else {
 			throw new IllegalArgumentApplicationException("지원하지 않는 정렬 방식입니다.");
 		}
-    }
+	}
 }
