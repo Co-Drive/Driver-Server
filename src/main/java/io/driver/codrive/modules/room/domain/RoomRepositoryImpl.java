@@ -3,6 +3,7 @@ package io.driver.codrive.modules.room.domain;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,6 @@ import static io.driver.codrive.modules.room.domain.QRoom.room;
 import static io.driver.codrive.modules.language.domain.QLanguage.language;
 
 import io.driver.codrive.global.model.SortType;
-import io.driver.codrive.global.util.PageUtils;
 import io.driver.codrive.modules.room.model.dto.RoomFilterDto;
 
 @Repository
@@ -38,7 +38,9 @@ public class RoomRepositoryImpl extends QuerydslRepositorySupport implements Roo
 			.join(room.roomLanguageMappings, roomLanguageMapping)
 			.join(roomLanguageMapping.language, language)
 			.where(
-				language.languageId.eq(languageId).and(room.roomStatus.eq(RoomStatus.ACTIVE)).and((room.password.isNull().or(room.password.isEmpty())))
+				language.languageId.eq(languageId)
+					.and(room.roomStatus.eq(RoomStatus.ACTIVE))
+					.and((room.password.isNull().or(room.password.isEmpty())))
 					.and(room.roomId.notIn(
 						JPAExpressions
 							.select(roomUserMapping.room.roomId)
@@ -62,8 +64,12 @@ public class RoomRepositoryImpl extends QuerydslRepositorySupport implements Roo
 			query.groupBy(roomLanguageMapping.room)
 			.having(roomLanguageMapping.language.countDistinct().eq((long) roomFilterDto.tagIds().size()));
 		}
-		List<Room> rooms = query.fetch();
-		return PageUtils.getPage(rooms, pageable, rooms.size());
+
+		long total = query.fetchCount();
+		List<Room> rooms = query.limit(pageable.getPageSize())
+			.offset(pageable.getOffset())
+			.fetch();
+		return new PageImpl<>(rooms, pageable, total);
 	}
 
 	private Predicate getRoomFilterRequest(RoomFilterDto roomFilterDto) {
